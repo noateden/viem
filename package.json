@@ -1,7 +1,7 @@
 {
   "name": "viem",
   "description": "TypeScript Interface for Ethereum",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "scripts": {
     "bench": "vitest bench",
     "bench:ci": "CI=true vitest bench",
@@ -62,6 +62,11 @@
       "import": "./dist/esm/accounts/index.js",
       "default": "./dist/cjs/accounts/index.js"
     },
+    "./actions": {
+      "types": "./dist/types/actions/index.d.ts",
+      "import": "./dist/esm/actions/index.js",
+      "default": "./dist/cjs/actions/index.js"
+    },
     "./chains": {
       "types": "./dist/types/chains/index.d.ts",
       "import": "./dist/esm/chains/index.js",
@@ -112,8 +117,11 @@
       "accounts": [
         "./dist/types/accounts/index.d.ts"
       ],
+      "actions": [
+        "./dist/types/actions/index.d.ts"
+      ],
       "chains": [
-        "./dist/types/chains/index.d.ts"
+        "./dist/types/chains.d.ts"
       ],
       "contract": [
         "./dist/types/contract.d.ts"
@@ -152,7 +160,7 @@
     "@noble/hashes": "1.3.0",
     "@scure/bip32": "1.3.0",
     "@scure/bip39": "1.2.0",
-    "@wagmi/chains": "1.1.0",
+    "@wagmi/chains": "1.2.0",
     "abitype": "0.8.7",
     "isomorphic-ws": "5.0.0",
     "ws": "8.12.0"
@@ -207,16 +215,40 @@
       "limit": "60 kB"
     },
     {
+      "name": "viem",
+      "path": "./dist/esm/index.js",
+      "limit": "50 kB",
+      "import": "*"
+    },
+    {
+      "name": "viem/chains",
+      "path": "./dist/esm/chains/index.js",
+      "limit": "11 kB",
+      "import": "*"
+    },
+    {
+      "name": "viem/ens",
+      "path": "./dist/esm/ens.js",
+      "limit": "45 kB",
+      "import": "*"
+    },
+    {
       "name": "viem (tree-shaking check)",
       "path": "./dist/esm/index.js",
       "limit": "1.5 kB",
       "import": "{ defineBlock }"
     },
     {
-      "name": "viem/chains",
-      "path": "./dist/esm/chains.js",
-      "limit": "1100 B",
+      "name": "viem/chains (tree-shaking check)",
+      "path": "./dist/esm/chains/index.js",
+      "limit": "900 B",
       "import": "{ mainnet }"
+    },
+    {
+      "name": "viem/ens (tree-shaking check)",
+      "path": "./dist/esm/ens.js",
+      "limit": "18 kB",
+      "import": "{ getEnsAvatar }"
     }
   ],
   "simple-git-hooks": {

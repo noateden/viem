@@ -122,20 +122,25 @@ export type MaybeUndefined<
 > = TUndefinedish extends true ? T | undefined : T
 
 /**
- * @description Assigns the properties of U onto T.
- *
- * @example
- * Assign<{ a: string, b: number }, { a: undefined, c: boolean }>
- * => { a: undefined, b: number, c: boolean }
+ * @private Helper for `Assign`. This is a workaround for tsc generating errorneous type definitions.
  */
-export type Assign<T, U> = {
+export type Assign_<T, U> = {
   [K in
     keyof T as K extends keyof U
       ? U[K] extends void
         ? never
         : K
       : K]: K extends keyof U ? U[K] : T[K]
-} & U
+}
+
+/**
+ * @description Assigns the properties of U onto T.
+ *
+ * @example
+ * Assign<{ a: string, b: number }, { a: undefined, c: boolean }>
+ * => { a: undefined, b: number, c: boolean }
+ */
+export type Assign<T, U> = Assign_<T, U> & U
 
 /**
  * @description Makes nullable properties from T optional.
@@ -171,9 +176,9 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 /**
  * @description Combines members of an intersection into a readable type.
  *
- * @link https://twitter.com/mattpocockuk/status/1622730173446557697?s=20&t=NdpAcmEFXY01xkqU3KO0Mg
+ * @see {@link https://twitter.com/mattpocockuk/status/1622730173446557697?s=20&t=NdpAcmEFXY01xkqU3KO0Mg}
  * @example
- * Prettify<{ a: string } | { b: string } | { c: number, d: bigint }>
+ * Prettify<{ a: string } & { b: string } & { c: number, d: bigint }>
  * => { a: string, b: string, c: number, d: bigint }
  */
 export type Prettify<T> = {

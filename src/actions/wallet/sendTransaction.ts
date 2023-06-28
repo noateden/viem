@@ -1,6 +1,6 @@
 import type { Account } from '../../accounts/types.js'
 import { parseAccount } from '../../accounts/utils/parseAccount.js'
-import type { WalletClient } from '../../clients/createWalletClient.js'
+import type { Client } from '../../clients/createClient.js'
 import type { Transport } from '../../clients/transports/createTransport.js'
 import { AccountNotFoundError } from '../../errors/account.js'
 import type { BaseError } from '../../errors/base.js'
@@ -11,6 +11,7 @@ import type {
   TransactionRequest,
   TransactionSerializable,
 } from '../../types/transaction.js'
+import type { IsUndefined } from '../../types/utils.js'
 import { assertCurrentChain } from '../../utils/chain.js'
 import { getTransactionError } from '../../utils/errors/getTransactionError.js'
 import { extract } from '../../utils/formatters/extract.js'
@@ -26,7 +27,12 @@ export type SendTransactionParameters<
   TChain extends Chain | undefined = Chain | undefined,
   TAccount extends Account | undefined = Account | undefined,
   TChainOverride extends Chain | undefined = Chain,
-> = Omit<FormattedTransactionRequest<TChainOverride>, 'from'> &
+> = Omit<
+  FormattedTransactionRequest<
+    IsUndefined<TChain> extends true ? TChainOverride : TChain
+  >,
+  'from'
+> &
   GetAccountParameter<TAccount> &
   GetChain<TChain, TChainOverride>
 
@@ -82,7 +88,7 @@ export async function sendTransaction<
   TAccount extends Account | undefined,
   TChainOverride extends Chain | undefined,
 >(
-  client: WalletClient<Transport, TChain, TAccount>,
+  client: Client<Transport, TChain, TAccount>,
   args: SendTransactionParameters<TChain, TAccount, TChainOverride>,
 ): Promise<SendTransactionReturnType> {
   const {
@@ -152,10 +158,10 @@ export async function sendTransaction<
     }
 
     const format =
-      chain?.formatters?.transactionRequest || formatTransactionRequest
+      chain?.formatters?.transactionRequest?.format || formatTransactionRequest
     const request = format({
       // Pick out extra data that might exist on the chain's transaction request type.
-      ...extract(rest, { formatter: format }),
+      ...extract(rest, { format }),
       accessList,
       data,
       from: account.address,

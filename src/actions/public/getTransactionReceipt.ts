@@ -1,4 +1,4 @@
-import type { PublicClient } from '../../clients/createPublicClient.js'
+import type { Client } from '../../clients/createClient.js'
 import type { Transport } from '../../clients/transports/createTransport.js'
 import { TransactionReceiptNotFoundError } from '../../errors/transaction.js'
 import type { Chain } from '../../types/chain.js'
@@ -42,7 +42,7 @@ export type GetTransactionReceiptReturnType<
  * })
  */
 export async function getTransactionReceipt<TChain extends Chain | undefined>(
-  client: PublicClient<Transport, TChain>,
+  client: Client<Transport, TChain>,
   { hash }: GetTransactionReceiptParameters,
 ) {
   const receipt = await client.request({
@@ -53,6 +53,7 @@ export async function getTransactionReceipt<TChain extends Chain | undefined>(
   if (!receipt) throw new TransactionReceiptNotFoundError({ hash })
 
   const format =
-    client.chain?.formatters?.transactionReceipt || formatTransactionReceipt
+    client.chain?.formatters?.transactionReceipt?.format ||
+    formatTransactionReceipt
   return format(receipt) as GetTransactionReceiptReturnType<TChain>
 }

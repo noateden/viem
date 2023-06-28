@@ -2,7 +2,7 @@ import type { Address } from 'abitype'
 
 import type { Account } from '../../accounts/types.js'
 import { parseAccount } from '../../accounts/utils/parseAccount.js'
-import type { PublicClient } from '../../clients/createPublicClient.js'
+import type { Client } from '../../clients/createClient.js'
 import type { Transport } from '../../clients/transports/createTransport.js'
 import { multicall3Abi } from '../../constants/abis.js'
 import { aggregate3Signature } from '../../constants/contract.js'
@@ -83,7 +83,7 @@ export type CallReturnType = { data: Hex | undefined }
  * })
  */
 export async function call<TChain extends Chain | undefined>(
-  client: PublicClient<Transport, TChain>,
+  client: Client<Transport, TChain>,
   args: CallParameters<TChain>,
 ): Promise<CallReturnType> {
   const {
@@ -111,10 +111,11 @@ export async function call<TChain extends Chain | undefined>(
     const block = blockNumberHex || blockTag
 
     const format =
-      client.chain?.formatters?.transactionRequest || formatTransactionRequest
+      client.chain?.formatters?.transactionRequest?.format ||
+      formatTransactionRequest
     const request = format({
       // Pick out extra data that might exist on the chain's transaction request type.
-      ...extract(rest, { formatter: format }),
+      ...extract(rest, { format }),
       from: account?.address,
       accessList,
       data,
@@ -193,8 +194,8 @@ type ScheduleMulticallParameters<TChain extends Chain | undefined> = Pick<
   to: Address
 }
 
-async function scheduleMulticall<TChain extends Chain | undefined>(
-  client: PublicClient<Transport, TChain>,
+async function scheduleMulticall<TChain extends Chain | undefined,>(
+  client: Client<Transport>,
   args: ScheduleMulticallParameters<TChain>,
 ) {
   const { batchSize = 1024, wait = 0 } =

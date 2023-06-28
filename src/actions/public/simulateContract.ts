@@ -1,7 +1,7 @@
 import type { Abi } from 'abitype'
 
 import { parseAccount } from '../../accounts/utils/parseAccount.js'
-import type { PublicClient } from '../../clients/createPublicClient.js'
+import type { Client } from '../../clients/createClient.js'
 import type { Transport } from '../../clients/transports/createTransport.js'
 import type { BaseError } from '../../errors/base.js'
 import type { Chain } from '../../types/chain.js'
@@ -43,7 +43,7 @@ export type SimulateContractParameters<
     TFunctionName,
     CallParameters<TChain> extends CallParameters
       ? CallParameters<TChain>['value']
-      : undefined
+      : CallParameters['value']
   >
 
 export type SimulateContractReturnType<
@@ -105,7 +105,7 @@ export async function simulateContract<
   TFunctionName extends string,
   TChainOverride extends Chain | undefined,
 >(
-  client: PublicClient<Transport, TChain>,
+  client: Client<Transport, TChain>,
   {
     abi,
     address,

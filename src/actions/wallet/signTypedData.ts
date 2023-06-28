@@ -2,7 +2,7 @@ import type { TypedData } from 'abitype'
 
 import type { Account } from '../../accounts/types.js'
 import { parseAccount } from '../../accounts/utils/parseAccount.js'
-import type { WalletClient } from '../../clients/createWalletClient.js'
+import type { Client } from '../../clients/createClient.js'
 import type { Transport } from '../../clients/transports/createTransport.js'
 import { AccountNotFoundError } from '../../errors/account.js'
 import type { GetAccountParameter } from '../../types/account.js'
@@ -126,7 +126,7 @@ export async function signTypedData<
   TChain extends Chain | undefined,
   TAccount extends Account | undefined,
 >(
-  client: WalletClient<Transport, TChain, TAccount>,
+  client: Client<Transport, TChain, TAccount>,
   {
     account: account_ = client.account,
     domain,
@@ -143,9 +143,12 @@ export async function signTypedData<
 
   const types = {
     EIP712Domain: [
-      domain?.name && { name: 'name', type: 'string' },
+      typeof domain?.name === 'string' && { name: 'name', type: 'string' },
       domain?.version && { name: 'version', type: 'string' },
-      domain?.chainId && { name: 'chainId', type: 'uint256' },
+      typeof domain?.chainId === 'number' && {
+        name: 'chainId',
+        type: 'uint256',
+      },
       domain?.verifyingContract && {
         name: 'verifyingContract',
         type: 'address',
